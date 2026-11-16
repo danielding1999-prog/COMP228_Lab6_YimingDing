@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.layout.BorderPane;
 
 
@@ -18,6 +19,9 @@ public class Main extends Application {
 		TextField full_name = new TextField();
 		TextField age = new TextField();
 		 ComboBox<String> gender = new ComboBox<String>();
+		 TextField Phone = new TextField();
+		 TextField Diagnosis = new TextField();
+		 final DatePicker datePicker = new DatePicker();
 		 gender.getItems().addAll("Male", "Female");
 		try {
 

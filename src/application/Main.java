@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 
 import com.yd.lab6.buttoncontrol.*;
 
+import com.yd.lab6.table.*;
 
 public class Main extends Application {
 	@Override

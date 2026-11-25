@@ -1,7 +1,9 @@
 package com.yd.lab6.buttoncontrol;
 
-import javafx.scene.control.ComboBox;
+
+
 import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
 import java.time.LocalDate;
@@ -9,6 +11,7 @@ import java.time.LocalDate;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ButtonControl {
@@ -138,4 +141,10 @@ public class ButtonControl {
 		    Admission_date.setValue(null);
 
 		  }
+	 
+	 public void updateFields(TextField full_name_text, TextField age_text,
+				TextField Phone_text, TextField Diagnosis_text, ComboBox<String> gender_FMN, DatePicker Admission_date) {
+		 
+		 }
 	}
+

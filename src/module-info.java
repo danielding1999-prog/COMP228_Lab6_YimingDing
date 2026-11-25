@@ -7,4 +7,5 @@ module COMP228_Lab6_Yiming_Ding {
 	requires javafx.media;
 	
 	opens application to javafx.graphics, javafx.fxml;
+	opens com.yd.lab6.patient to javafx.base;
 }

@@ -1,23 +1,30 @@
 package application;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import com.yd.lab6.buttoncontrol.*;
-
+import com.yd.lab6.patient.Patient;
 import com.yd.lab6.table.*;
 
 public class Main extends Application {
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/lab6";
+	  private static final String DB_USER = "root";
+	  private static final String DB_PASSWORD = "001214";
 	@Override
 	public void start(Stage primaryStage) {
 
@@ -69,7 +76,39 @@ public class Main extends Application {
 		form.add(Phone_text, 1, 3);
 		form.add(Diagnosis_text, 1, 4);
 		form.add(Admission_date_picker, 1, 5);
-		patient_detail.getChildren().add(form);
+		
+		TableView<Patient> tableView = new TableView<>();
+
+        TableColumn<Patient, String> idCol = new TableColumn<>("Patient ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("patient_id"));
+
+        TableColumn<Patient, String> nameCol = new TableColumn<>("Full Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("Full_Name"));
+
+        TableColumn<Patient, String> ageCol = new TableColumn<>("Age");
+        ageCol.setCellValueFactory(new PropertyValueFactory<>("Age"));
+
+        TableColumn<Patient, String> genderCol = new TableColumn<>("Gender");
+        genderCol.setCellValueFactory(new PropertyValueFactory<>("Gender"));
+
+        TableColumn<Patient, String> phoneCol = new TableColumn<>("Phone");
+        phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+
+        TableColumn<Patient, String> diagnosisCol = new TableColumn<>("Diagnosis");
+        diagnosisCol.setCellValueFactory(new PropertyValueFactory<>("Diagnosis"));
+
+        TableColumn<Patient, String> admissionDateCol = new TableColumn<>("Admission Date");
+        admissionDateCol.setCellValueFactory(new PropertyValueFactory<>("Admission_date"));
+
+        tableView.getColumns().addAll(
+                idCol, nameCol, ageCol, genderCol, phoneCol, diagnosisCol, admissionDateCol
+        );
+        
+        Table tableLoader = new Table();
+        ObservableList<Patient> patientList = tableLoader.getTableData(DB_URL, DB_USER, DB_PASSWORD);
+        tableView.setItems(patientList);
+        
+        patient_detail.getChildren().addAll(form, tableView);
 
 		root.setTop(top);
 		root.setBottom(execute_button);
@@ -89,6 +128,8 @@ public class Main extends Application {
 				String status_message = buttonControl.registerPatient(full_name_text, age_text,
 				Phone_text, Diagnosis_text, gender_FMN, Admission_date_picker);
 				status.setText(status_message);
+				patientList.setAll(tableLoader.getTableData(DB_URL, DB_USER, DB_PASSWORD));
+		        tableView.refresh();
 		}));
 
 		}

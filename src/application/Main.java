@@ -131,10 +131,49 @@ public class Main extends Application {
 				patientList.setAll(tableLoader.getTableData(DB_URL, DB_USER, DB_PASSWORD));
 		        tableView.refresh();
 		}));
+		
+		update.setOnAction(e -> {
+            Patient selected = tableView.getSelectionModel().getSelectedItem();
+            String selectedId = (selected != null) ? selected.getPatient_id() : null;
 
+            String status_message = buttonControl.updatePatient(
+                    selectedId,
+                    full_name_text,
+                    age_text,
+                    Phone_text,
+                    Diagnosis_text,
+                    gender_FMN,
+                    Admission_date_picker
+            );
+            status.setText(status_message);
+            patientList.setAll(tableLoader.getTableData(DB_URL, DB_USER, DB_PASSWORD));
+            tableView.refresh();
+        });
+		
+		delete.setOnAction(e -> {
+		    Patient selected = tableView.getSelectionModel().getSelectedItem();
+		    String selectedId = (selected != null) ? selected.getPatient_id() : null;
+
+		    String status_message = buttonControl.deletePatient(
+		            selectedId,
+		            full_name_text,
+		            age_text,
+		            Phone_text,
+		            Diagnosis_text,
+		            gender_FMN,
+		            Admission_date_picker
+		    );
+		    status.setText(status_message);
+		    patientList.setAll(tableLoader.getTableData(DB_URL, DB_USER, DB_PASSWORD));
+		    tableView.refresh();
+		});
 		}
+	
+	
 
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
+	
 }

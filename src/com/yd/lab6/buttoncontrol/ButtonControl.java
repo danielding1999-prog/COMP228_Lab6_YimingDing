@@ -8,6 +8,8 @@ import javafx.scene.control.DatePicker;
 
 import java.time.LocalDate;
 
+import com.yd.lab6.patient.Patient;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -142,9 +144,128 @@ public class ButtonControl {
 
 		  }
 	 
-	 public void updateFields(TextField full_name_text, TextField age_text,
-				TextField Phone_text, TextField Diagnosis_text, ComboBox<String> gender_FMN, DatePicker Admission_date) {
-		 
-		 }
+	 public String updatePatient(
+		        String patientId,
+		        TextField full_name_text,
+		        TextField age_text,
+		        TextField Phone_text,
+		        TextField Diagnosis_text,
+		        ComboBox<String> gender_FMN,
+		        DatePicker Admission_date
+		) {
+		    if (patientId == null || patientId.trim().isEmpty()) {
+		        return "Please select a patient row first.";
+		    }
+
+		    String name = full_name_text.getText().trim();
+		    String age_value = age_text.getText().trim();
+		    String gender = gender_FMN.getValue();
+		    String phone = Phone_text.getText().trim();
+		    String diagnosis = Diagnosis_text.getText().trim();
+		    LocalDate date = Admission_date.getValue();
+
+		    java.util.List<String> setClauses = new java.util.ArrayList<>();
+		    java.util.List<Object> params = new java.util.ArrayList<>();
+
+		    if (!name.isEmpty()) {
+		        setClauses.add("`Full Name` = ?");
+		        params.add(name);
+		    }
+
+		    if (!age_value.isEmpty()) {
+		        int age;
+		        try {
+		            age = Integer.parseInt(age_value);
+		        } catch (NumberFormatException ex) {
+		            return "Age must be a whole number.";
+		        }
+		        if (age < 16 || age > 100) {
+		            return "Age must be between 16 and 100.";
+		        }
+		        setClauses.add("`Age` = ?");
+		        params.add(age);
+		    }
+
+		    if (gender != null && !gender.isBlank()) {
+		        setClauses.add("`Gender` = ?");
+		        params.add(gender);
+		    }
+
+		    if (!phone.isEmpty()) {
+		        if (!phone.matches("^[0-9]{3}-[0-9]{3}-[0-9]{4}$")) {
+		            return "Enter a valid phone number.";
+		        }
+		        setClauses.add("`phone` = ?");
+		        params.add(phone);
+		    }
+
+		    if (!diagnosis.isEmpty()) {
+		        setClauses.add("`Diagnosis` = ?");
+		        params.add(diagnosis);
+		    }
+
+		    if (date != null) {
+		        setClauses.add("`Admission date` = ?");
+		        params.add(java.sql.Date.valueOf(date));
+		    }
+
+		    if (setClauses.isEmpty()) {
+		        return "Enter or select at least one field to update.";
+		    }
+
+		    String sql = "UPDATE patients SET " + String.join(", ", setClauses) + " WHERE `patient_id` = ?";
+		    params.add(patientId.trim());
+
+		    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+		         PreparedStatement statement = connection.prepareStatement(sql)) {
+
+		        for (int i = 0; i < params.size(); i++) {
+		            statement.setObject(i + 1, params.get(i));
+		        }
+
+		        int count = statement.executeUpdate();
+		        if (count == 1) {
+		            clearFields(full_name_text, age_text, Phone_text, Diagnosis_text, gender_FMN, Admission_date);
+		            return "Patient updated successfully!";
+		        }
+		        return "No matching patient record was updated.";
+
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		        return "Database error: " + ex.getMessage();
+		    }
+		}
+	 public String deletePatient(
+		        String patientId,
+		        TextField full_name_text,
+		        TextField age_text,
+		        TextField Phone_text,
+		        TextField Diagnosis_text,
+		        ComboBox<String> gender_FMN,
+		        DatePicker Admission_date
+		) {
+		    if (patientId == null || patientId.trim().isEmpty()) {
+		        return "Please select a patient row to delete.";
+		    }
+
+		    String sql = "DELETE FROM patients WHERE `patient_id` = ?";
+
+		    try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+		         PreparedStatement statement = connection.prepareStatement(sql)) {
+
+		        statement.setString(1, patientId.trim());
+
+		        int count = statement.executeUpdate();
+		        if (count == 1) {
+		            clearFields(full_name_text, age_text, Phone_text, Diagnosis_text, gender_FMN, Admission_date);
+		            return "Patient deleted successfully!";
+		        }
+		        return "No matching patient record was deleted.";
+
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		        return "Database error: " + ex.getMessage();
+		    }
+		}
 	}
 
